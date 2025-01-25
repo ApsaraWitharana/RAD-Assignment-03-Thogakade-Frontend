@@ -1,10 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router"
 import "./App.css"
 import { RootLayout } from "./components/RootLayout"
-import Customer from "./pages/Customer"
+import  {Customers} from "./pages/Customer"
 import Item from "./pages/Item"
 import PlaceOrder from "./pages/PlaceOrder"
 import Dashboard from "./pages/Dashboard"
+import {store} from "./store/store.ts";
+import {Provider} from "react-redux";
 
 function App() {
     const routes = createBrowserRouter([
@@ -13,7 +15,7 @@ function App() {
             element: <RootLayout />,
             children: [
                 { path: "", element: <Dashboard /> },
-                { path: "/customer", element: <Customer /> },
+                { path: "/customer", element: <Customers /> },
                 { path: "/item", element: <Item /> },
                 { path: "/place-order", element: <PlaceOrder /> }
             ]
@@ -22,7 +24,10 @@ function App() {
 
     return (
         <>
+            <Provider store={store}>
             <RouterProvider router={routes} />
+            </Provider>
+
         </>
     )
 }
