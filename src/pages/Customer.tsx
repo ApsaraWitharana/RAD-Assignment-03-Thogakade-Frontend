@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Trash2 } from "react-feather";
+import {Edit2,  Trash2} from "react-feather";
 import { useNavigate } from "react-router";
 import { AppDispatch } from "../store/store.ts";
-import { useDispatch } from "react-redux";
-import { saveCustomer } from "../reducers/CustomerReducer.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {getCustomers, saveCustomer, UpdateCustomer} from "../reducers/CustomerReducer.ts";
 import { Customer } from "../model/Customer.ts";
 
 export function Customers() {
@@ -20,12 +20,19 @@ export function Customers() {
   const [Address, setAddress] = useState("");
   const [Email, setEmail] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const customers = useSelector((state) => state.customer);
 
-  // Generate customer code only once when the component mounts
+
   useEffect(() => {
+    if (customers.length ===0){
+      dispatch(getCustomers())
+    }
     const newCustomerCode = generateCustomerCode();
     setCustomerId(newCustomerCode);
-  }, [lastCustomerCode]);
+    console.log("Dispatching getCustomers");
+    resetForm();
+  }, [lastCustomerCode, dispatch]);
+
 
   const generateCustomerCode = () => {
     const nextNumber = lastCustomerCode + 1;
@@ -33,25 +40,41 @@ export function Customers() {
     return `CUS-${formattedNumber}`;
   };
 
-  const handleAdd = () => {
+  function handleRowClick(customers: Customer) {
+    setCustomerId(customers.CustomerID);
+    setName(customers.Name);
+    setAddress(customers.Address);
+    setEmail(customers.Email);
+    setIsEditing(true);
+  }
+  function handleAdd  (){
     const newCustomer = new Customer(CustomerId, Name, Address, Email);
     dispatch(saveCustomer(newCustomer));
-
+    getCustomers();
     alert(JSON.stringify(newCustomer, null, 2));
-    console.log(newCustomer);
     const nextNumber = lastCustomerCode + 1;
     setLastCustomerCode(nextNumber);
 
     localStorage.setItem("lastCustomerCode", nextNumber.toString());
     navigate("/");
     resetForm();
-  };
+  }
+
+  function handleEdit  (){
+    const updatedCustomer = new Customer(CustomerId, Name, Address, Email);
+    dispatch(UpdateCustomer(updatedCustomer));
+    alert(JSON.stringify(updatedCustomer, null, 2));
+    console.log(updatedCustomer);
+    resetForm();
+    getCustomers();
+
+  }
+
 
   const resetForm = () => {
     setName("");
     setAddress("");
     setEmail("");
-    setIsEditing(false);
     const newCode = generateCustomerCode();
     setCustomerId(newCode);
   };
@@ -66,6 +89,8 @@ export function Customers() {
               value={CustomerId}
               className="border p-2 rounded"
               readOnly
+              onChange={(e) => setCustomerId(e.target.value)}
+
           />
           <input
               type="text"
@@ -94,22 +119,15 @@ export function Customers() {
         </div>
         <div className="flex justify-end">
           {isEditing ? (
-              <button className="bg-blue-500 text-white p-2 rounded mr-2">
-                Update
+              <button onClick={handleEdit} className="bg-blue-500 text-white p-2 rounded mr-2">Update
               </button>
           ) : (
-              <button
-                  onClick={handleAdd}
-                  className="bg-green-500 text-white p-2 rounded mr-2"
-              >
+              <button onClick={handleAdd} className="bg-green-500 text-white p-2 rounded mr-2">
                 Add
               </button>
           )}
           {isEditing && (
-              <button
-                  onClick={resetForm}
-                  className="bg-gray-500 text-white p-2 rounded"
-              >
+              <button onClick={resetForm} className="bg-gray-500 text-white p-2 rounded">
                 Cancel
               </button>
           )}
@@ -125,21 +143,28 @@ export function Customers() {
           </tr>
           </thead>
           <tbody>
-          <tr className="hover:cursor-pointer hover:bg-slate-600 hover:text-white">
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2 text-center">
-              <button className="bg-red-500 text-white p-2 rounded-lg">
-                <Trash2 />
-              </button>
-            </td>
-          </tr>
+          {customers.map((customer) => (
+              <tr key={customer.CustomerID} className="hover:cursor-pointer hover:bg-slate-600 hover:text-white">
+                <td className="border px-4 py-2">{customer.CustomerID}</td>
+                <td className="border px-4 py-2">{customer.Name}</td>
+                <td className="border px-4 py-2">{customer.Address}</td>
+                <td className="border px-4 py-2">{customer.Email}</td>
+                <td className="border px-4 py-2 text-center">
+                  <button  className="bg-red-500 hover:cursor-pointer text-white p-2 rounded-lg mr-3">
+                    <Trash2/>
+                  </button>
+
+                  <button onClick={() => handleRowClick(customer)} className="hover:cursor-pointer bg-blue-500 text-white p-2 rounded-lg">
+                    <Edit2/>
+                  </button>
+                </td>
+              </tr>
+          ))}
+
           </tbody>
         </table>
       </div>
   );
 }
 
-export default Customers;
+
