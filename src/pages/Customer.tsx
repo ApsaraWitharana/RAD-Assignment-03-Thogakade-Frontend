@@ -3,7 +3,7 @@ import {Edit2,  Trash2} from "react-feather";
 import { useNavigate } from "react-router";
 import { AppDispatch } from "../store/store.ts";
 import {useDispatch, useSelector} from "react-redux";
-import {getCustomers, saveCustomer, UpdateCustomer} from "../reducers/CustomerReducer.ts";
+import {deleteCustomer, getCustomers, saveCustomer, UpdateCustomer} from "../reducers/CustomerReducer.ts";
 import { Customer } from "../model/Customer.ts";
 
 export function Customers() {
@@ -47,6 +47,7 @@ export function Customers() {
     setEmail(customers.Email);
     setIsEditing(true);
   }
+
   function handleAdd  (){
     const newCustomer = new Customer(CustomerId, Name, Address, Email);
     dispatch(saveCustomer(newCustomer));
@@ -54,11 +55,11 @@ export function Customers() {
     alert(JSON.stringify(newCustomer, null, 2));
     const nextNumber = lastCustomerCode + 1;
     setLastCustomerCode(nextNumber);
-
     localStorage.setItem("lastCustomerCode", nextNumber.toString());
     navigate("/");
     resetForm();
   }
+
 
   function handleEdit  (){
     const updatedCustomer = new Customer(CustomerId, Name, Address, Email);
@@ -70,6 +71,23 @@ export function Customers() {
 
   }
 
+  function handleDelete(Email: string) {
+    dispatch(deleteCustomer(Email))
+        .unwrap()
+        .then((response) => {
+          if (response) {
+            getCustomers();
+            alert('Customer deleted successfully.');
+            resetForm();
+          } else {
+            alert('Failed to delete customer. Please try again.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error deleting customer:', error);
+          alert('An error occurred while deleting the customer.');
+        });
+  }
 
   const resetForm = () => {
     setName("");
@@ -150,7 +168,7 @@ export function Customers() {
                 <td className="border px-4 py-2">{customer.Address}</td>
                 <td className="border px-4 py-2">{customer.Email}</td>
                 <td className="border px-4 py-2 text-center">
-                  <button  className="bg-red-500 hover:cursor-pointer text-white p-2 rounded-lg mr-3">
+                  <button onClick={() => handleDelete(customer.Email)}  className="bg-red-500 hover:cursor-pointer text-white p-2 rounded-lg mr-3">
                     <Trash2/>
                   </button>
 

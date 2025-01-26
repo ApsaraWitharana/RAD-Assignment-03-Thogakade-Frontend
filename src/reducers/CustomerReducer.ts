@@ -6,7 +6,11 @@ export const initialState: Customer [] = [];
 
 const api = axios.create({
     baseURL: 'http://localhost:3000/customer',
-})
+    headers: {
+        'Content-Type': 'application/json',
+    },
+
+});
 
 
 export const saveCustomer =createAsyncThunk(
@@ -44,6 +48,18 @@ export const getCustomers = createAsyncThunk(
         }
     }
 )
+
+ export const deleteCustomer = createAsyncThunk(
+     'customer/deleteCustomer',
+     async (CustomerId:string)=>{
+         try {
+             const resp = await api.delete(`/delete/${CustomerId}`);
+             return resp.data;
+         }catch (error){
+             console.error('Error deleting customer:', error);
+         }
+     }
+ )
 
 //create slice
 const customerSlice = createSlice({
@@ -95,7 +111,18 @@ const customerSlice = createSlice({
         })
         .addCase(getCustomers.rejected, (state, action) => {
             console.log("Rejected to get customer:", action.payload);
-        })
+        });
+        //delete customer
+        builder
+            .addCase(deleteCustomer.rejected, (state, action) => {
+                console.error('Rejected to delete customer:', action.payload);
+            })
+            .addCase(deleteCustomer.fulfilled, (state, action) => {
+                return state = state.filter((customer: Customer) => customer.Email !== action.payload.Email);
+            })
+            .addCase(deleteCustomer.pending, (state, action) => {
+                console.log('Pending to delete customer:', action.payload);
+            });
     }
 });
 
