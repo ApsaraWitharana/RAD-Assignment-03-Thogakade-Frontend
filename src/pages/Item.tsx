@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Trash2 } from "react-feather";
+import {Edit2, Trash2} from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { AppDispatch } from "../store/store.ts";
-import { saveItem, getItems} from "../reducers/ItemReducer.ts";
+import {saveItem, getItems, deleteItem, UpdateItem} from "../reducers/ItemReducer.ts";
 import { Item } from "../model/Item.ts";
 
 export function Items() {
@@ -57,6 +57,41 @@ export function Items() {
     navigate("/");
   }
 
+  function handleDelete(ItemId : number) {
+    dispatch(deleteItem(ItemId))
+    .unwrap()
+        .then((resp) =>{
+          if (resp) {
+            getItems();
+            alert("Deleted successfully");
+            resetForm();
+          }else {
+            alert("Are you sure you want to delete this item?");
+          }
+        })
+    .catch((err) => {
+      alert("Are you sure you want to delete this item?");
+      console.log(err);
+    })
+  }
+
+  function handleRowClick(item:Item){
+    setItemId(item.ItemID);
+    setName(item.Name);
+    setQuantity(item.Quantity);
+    setPrice(item.Price);
+    setIsEditing(true);
+
+  }
+  function handleEdit() {
+    const updateItem = new Item(ItemId,Name,Quantity,Price);
+    dispatch(UpdateItem(updateItem));
+    alert("Updated successfully");
+    console.log(updateItem);
+    getItems();
+    resetForm();
+  }
+
   const resetForm = () => {
     setName("");
     setQuantity("");
@@ -106,7 +141,7 @@ export function Items() {
         </div>
         <div className="flex justify-end">
           {isEditing ? (
-              <button className="bg-blue-500 text-white p-2 rounded mr-2">
+              <button onClick={handleEdit} className="bg-blue-500 text-white p-2 rounded mr-2">
                 Update
               </button>
           ) : (
@@ -145,12 +180,15 @@ export function Items() {
                     <td className="border px-4 py-2">{item.Quantity}</td>
                     <td className="border px-4 py-2">{item.Price}</td>
                     <td className="border px-4 py-2 text-center">
-                      <button className="bg-red-500 text-white p-2 rounded-lg">
-                        <Trash2 />
+                      <button onClick={()=> handleDelete(item.ItemID)} className="bg-red-500 text-white p-2 rounded-lg mr-3">
+                        <Trash2/>
+                      </button>
+                      <button onClick={()=> handleRowClick(item)} className="hover:cursor-pointer bg-blue-500 text-white p-2 rounded-lg">
+                        <Edit2/>
                       </button>
                     </td>
                   </tr>
-         ) )}
+          ))}
 
           </tbody>
         </table>
