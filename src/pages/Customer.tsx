@@ -105,7 +105,7 @@ export function Customers() {
               name="id"
               placeholder="ID"
               value={CustomerId}
-              className="border p-2 rounded bg-gray-200 cursor-not-allowed"
+              className="border p-2 rounded-full bg-gray-200 cursor-not-allowed"
               readOnly
               onChange={(e) => setCustomerId(e.target.value)}
 
@@ -116,7 +116,7 @@ export function Customers() {
               placeholder="Name"
               value={Name}
               onChange={(e) => setName(e.target.value)}
-              className="border p-2 rounded"
+              className="border p-2 rounded-full"
           />
           <input
               type="text"
@@ -124,7 +124,7 @@ export function Customers() {
               placeholder="Address"
               value={Address}
               onChange={(e) => setAddress(e.target.value)}
-              className="border p-2 rounded"
+              className="border p-2 rounded-full"
           />
           <input
               type="email"
@@ -132,15 +132,15 @@ export function Customers() {
               placeholder="Email"
               value={Email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border p-2 rounded"
+              className="border p-2 rounded-full"
           />
         </div>
         <div className="flex justify-end">
           {isEditing ? (
-              <button onClick={handleEdit} className="bg-blue-500 text-white p-2 rounded mr-2">Update
+              <button onClick={handleEdit} className="bg-blue-500 text-white p-2 rounded-full mr-2 hover:cursor-pointer w-20 h-10">Update
               </button>
           ) : (
-              <button onClick={handleAdd} className="bg-green-500 text-white p-2 rounded mr-2">
+              <button onClick={handleAdd} className="bg-green-500 text-white p-2 rounded-full mr-2 hover:cursor-pointer w-20 h-10">
                 Add
               </button>
           )}

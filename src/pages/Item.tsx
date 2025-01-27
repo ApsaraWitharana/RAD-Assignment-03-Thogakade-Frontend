@@ -111,7 +111,7 @@ export function Items() {
               value={ItemId}
               readOnly
               onChange={(e) => setItemId(e.target.value)}
-              className="border p-2 rounded bg-gray-200 cursor-not-allowed"
+              className="border p-2 rounded-full bg-gray-200 cursor-not-allowed"
           />
           <input
               type="text"
@@ -119,7 +119,7 @@ export function Items() {
               placeholder="Name"
               value={Name}
               onChange={(e) => setName(e.target.value)}
-              className="border p-2 rounded"
+              className="border p-2 rounded-full"
           />
           <input
               type="number"
@@ -127,7 +127,7 @@ export function Items() {
               placeholder="Quantity"
               value={Quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="border p-2 rounded"
+              className="border p-2 rounded-full"
           />
           <input
               type="number"
@@ -136,18 +136,18 @@ export function Items() {
               placeholder="Price"
               value={Price}
               onChange={(e) => setPrice(e.target.value)}
-              className="border p-2 rounded"
+              className="border p-2 rounded-full"
           />
         </div>
         <div className="flex justify-end">
           {isEditing ? (
-              <button onClick={handleEdit} className="bg-blue-500 text-white p-2 rounded mr-2">
+              <button onClick={handleEdit} className="hover:cursor-pointer w-20 h-10 bg-blue-500 text-white p-2 rounded-full mr-2">
                 Update
               </button>
           ) : (
               <button
                   onClick={handleAdd}
-                  className="bg-green-500 text-white p-2 rounded mr-2"
+                  className="bg-green-500 text-white p-2 rounded-full mr-2 hover:cursor-pointer w-20 h-10"
               >
                 Add
               </button>
@@ -180,7 +180,7 @@ export function Items() {
                     <td className="border px-4 py-2">{item.Quantity}</td>
                     <td className="border px-4 py-2">{item.Price}</td>
                     <td className="border px-4 py-2 text-center">
-                      <button onClick={()=> handleDelete(item.ItemID)} className="bg-red-500 text-white p-2 rounded-lg mr-3">
+                      <button onClick={()=> handleDelete(item.ItemID)} className="hover:cursor-pointer bg-red-500 text-white p-2 rounded-lg mr-3">
                         <Trash2/>
                       </button>
                       <button onClick={()=> handleRowClick(item)} className="hover:cursor-pointer bg-blue-500 text-white p-2 rounded-lg">

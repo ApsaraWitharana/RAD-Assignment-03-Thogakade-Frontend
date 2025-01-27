@@ -4,7 +4,7 @@ import { RootLayout } from "./components/RootLayout"
 import  {Customers} from "./pages/Customer"
 import  {Items} from "./pages/Item"
 import PlaceOrder from "./pages/PlaceOrder"
-import Dashboard from "./pages/Dashboard"
+import {Dashboard} from "./pages/Dashboard"
 import {store} from "./store/store.ts";
 import {Provider} from "react-redux";
 
