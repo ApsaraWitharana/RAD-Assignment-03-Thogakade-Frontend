@@ -161,7 +161,7 @@ export function Customers() {
           </tr>
           </thead>
           <tbody>
-          {customers.map((customer) => (
+          {customers.map(customer => (
               <tr key={customer.CustomerID} className="hover:cursor-pointer hover:bg-slate-600 hover:text-white">
                 <td className="border px-4 py-2">{customer.CustomerID}</td>
                 <td className="border px-4 py-2">{customer.Name}</td>

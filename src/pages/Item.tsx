@@ -1,18 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2 } from "react-feather";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { AppDispatch } from "../store/store.ts";
-import { saveItem } from "../reducers/ItemReducer.ts";
+import { saveItem, getItems} from "../reducers/ItemReducer.ts";
 import { Item } from "../model/Item.ts";
 
 export function Items() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
+
+  const [ItemId, setItemId] = useState("");
+  const [Name, setName] = useState("");
+  const [Quantity, setQuantity] = useState("");
+  const [Price, setPrice] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const items = useSelector((state) => state.item );
+
+
   const [lastItemId, setLastItemId] = useState(
       parseInt(localStorage.getItem("lastItemId") || "0", 10)
   );
+
+  useEffect(() => {
+    if (items.length === 0) {
+      dispatch(getItems());
+    }
+    resetForm();
+  }, [dispatch]);
 
   const generateItemId = () => {
     const newNumber = lastItemId + 1;
@@ -20,13 +36,9 @@ export function Items() {
     return `ITM-${formattedNumber}`;
   };
 
-  const [ItemId, setItemId] = useState(generateItemId());
-  const [Name, setName] = useState("");
-  const [Quantity, setQuantity] = useState("");
-  const [Price, setPrice] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
 
-  const handleAdd = () => {
+
+  function handleAdd ()  {
     const newItem = new Item(
         lastItemId + 1,
         Name,
@@ -36,13 +48,14 @@ export function Items() {
 
     dispatch(saveItem(newItem));
     alert("Added successfully");
+    getItems();
 
     const newNumber = lastItemId + 1;
     setLastItemId(newNumber);
     localStorage.setItem("lastItemId", newNumber.toString());
     resetForm();
     navigate("/");
-  };
+  }
 
   const resetForm = () => {
     setName("");
@@ -62,6 +75,7 @@ export function Items() {
               placeholder="Item ID"
               value={ItemId}
               readOnly
+              onChange={(e) => setItemId(e.target.value)}
               className="border p-2 rounded bg-gray-200 cursor-not-allowed"
           />
           <input
@@ -123,17 +137,21 @@ export function Items() {
           </tr>
           </thead>
           <tbody>
-          <tr className="hover:cursor-pointer hover:bg-slate-600 hover:text-white">
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2"></td>
-            <td className="border px-4 py-2 text-center">
-              <button className="bg-red-500 text-white p-2 rounded-lg">
-                <Trash2 />
-              </button>
-            </td>
-          </tr>
+
+          {items.map((item) => (
+                  <tr key={item.ItemID} className="hover:cursor-pointer hover:bg-slate-600 hover:text-white">
+                    <td className="border px-4 py-2">{item.ItemID}</td>
+                    <td className="border px-4 py-2">{item.Name}</td>
+                    <td className="border px-4 py-2">{item.Quantity}</td>
+                    <td className="border px-4 py-2">{item.Price}</td>
+                    <td className="border px-4 py-2 text-center">
+                      <button className="bg-red-500 text-white p-2 rounded-lg">
+                        <Trash2 />
+                      </button>
+                    </td>
+                  </tr>
+         ) )}
+
           </tbody>
         </table>
       </div>

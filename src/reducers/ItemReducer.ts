@@ -3,12 +3,15 @@ import axios from "axios";
 import {createAsyncThunk, createSlice,PayloadAction} from "@reduxjs/toolkit";
 
 export const initialState : Item [] = [];
+
 const api = axios.create({
     baseURL: 'http://localhost:3000/item',
     headers:{
         'Content-Type': 'application/json',
     },
 });
+
+
 
 export const saveItem = createAsyncThunk(
     'item/saveItem',
@@ -20,7 +23,25 @@ export const saveItem = createAsyncThunk(
             return console.error('Error creating item', err);
         }
     }
-);
+)
+
+
+export const getItems = createAsyncThunk(
+    'item/getItem',
+    async ()=>{
+        try {
+            const resp = await api.get('/get');
+            return resp.data;
+        }catch (error){
+            return console.log('error',error);
+        }
+    }
+)
+
+
+
+
+
 
 // create slice
 const itemSlice = createSlice({
@@ -43,7 +64,27 @@ const itemSlice = createSlice({
             .addCase(saveItem.pending,(state, action)=>{
                 console.log("Pending:", action.payload);
 
+            });
+        //get all
+        // Add validation to ensure action.payload is an array
+        builder
+            .addCase(getItems.fulfilled, (state, action) => {
+                if (Array.isArray(action.payload)) {
+                    action.payload.forEach((item: Item) => {
+                        state.push(item);
+                        console.log(item);
+                    });
+                } else {
+                    console.error("Invalid data received for items:", action.payload);
+                }
             })
+            .addCase(getItems.pending, (state, action) => {
+                console.log("Pending to get item:", action.payload);
+            })
+            .addCase(getItems.rejected, (state, action) => {
+                console.log("Failed to get items:", action.payload);
+            });
+
 
     }
 })
