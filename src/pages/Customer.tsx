@@ -105,7 +105,7 @@ export function Customers() {
               name="id"
               placeholder="ID"
               value={CustomerId}
-              className="border p-2 rounded"
+              className="border p-2 rounded bg-gray-200 cursor-not-allowed"
               readOnly
               onChange={(e) => setCustomerId(e.target.value)}
 
